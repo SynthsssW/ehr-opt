@@ -72,7 +72,9 @@ def get_access_token(client_id: str, private_key_pem: str) -> str:
         "iat": now,
         "exp": now + 300,            # Epic requires <= 5 minutes
     }
-    header = {"alg": "RS384", "typ": "JWT"}
+    # kid must match the key id published in our JWKS so Epic selects the
+    # right public key to verify this assertion.
+    header = {"alg": "RS384", "typ": "JWT", "kid": "ehr-opt-key-1"}
     assertion = jwt.encode(header, claims, private_key_pem)
 
     resp = requests.post(
